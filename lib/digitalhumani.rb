@@ -7,22 +7,11 @@ require_relative "digitalhumani/version"
 module DigitalHumani
   class Error < StandardError; end
 
-  # def config ...
-    # is it better to emulate how Faraday is configured here with a block? other examples ...
-    # https://github.com/facebook/facebook-ruby-business-sdk
-    # https://github.com/getsentry/sentry-ruby
-
   class SDK
     # Allow enterprise_id to be read, written
     attr_accessor :enterprise_id
 
-    # will probably need additional resources for:
-      # Enterprise - so can create an instance of an Enterprise, and then call methods on it (this is not mandatory)
-      # making HTTP requests
-    # is the way I am definie function parameters as symbols appropriate? so that they need to be specified when the function is called (uuid: "xxx"...)
-
     # Specify key, environment (w/ default "production"), enterpriseId (w/ "" default)
-    # Optionally pass this in as a hash/object instead of 3 separate params?
     def initialize(api_key:, environment: "production", enterprise_id: nil)
       # Validation
         # api_key required
