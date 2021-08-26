@@ -1,5 +1,8 @@
 # DigitalHumani Ruby SDK
 
+| :warning:        | This gem is currently under development and not yet published nor recommended for production use      |
+|---------------|:------------------------|
+
 This repository hosts the DigitalHumani Ruby Gem SDK. It can be used for interacting with the DigitalHumani RaaS (Reforestation-as-a-Service) API. 
 
 ## Installation
