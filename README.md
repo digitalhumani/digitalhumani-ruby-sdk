@@ -1,9 +1,9 @@
 # DigitalHumani Ruby SDK
 
-| :warning:        | This gem is currently under development and not yet published nor recommended for production use      |
-|---------------|:------------------------|
+| :warning: | This gem is currently under development and not yet published nor recommended for production use |
+| --------- | :----------------------------------------------------------------------------------------------- |
 
-This repository hosts the DigitalHumani Ruby Gem SDK. It can be used for interacting with the DigitalHumani RaaS (Reforestation-as-a-Service) API. 
+This repository hosts the DigitalHumani Ruby Gem SDK. It can be used for interacting with the DigitalHumani RaaS (Reforestation-as-a-Service) API.
 
 ## Installation
 
@@ -31,45 +31,56 @@ Or install it yourself as:
 ### Configuration
 
 ```ruby
-# Initialize the DigitalHumani SDK instance with:
-#   - Your API key
-#   - The environment (either "production" (default) or "sandbox")
-#   - Your enterprise ID
-digitalHumani = DigitalHumani::SDK.new(api_key: $API_KEY, enterprise_id: $ENTERPRISE_ID, environment: "production")
+# Initialize the DigitalHumani SDK instance:
+dh = DigitalHumani::SDK.new do
+    @api_key = $API_KEY             # your API key
+    @environment = "production"     # "production" or "sandbox"
+    @enterprise_id = $ENTERPRISE_ID # optional; your enterprise ID
+end
 ```
 
 Alternatively, you can specify and update the `enterprise_id` separately:
+
 ```ruby
 digitalHumani.enterprise_id = $ENTERPRISE_ID
 ```
 
-Note that when `enterprise_id` has been specified on the instance, it will be used as a default value on all below methods. 
+Note that when `enterprise_id` has been specified on the instance, it will be used as a default value on all below methods and therefore does not need to be provided as a parameter.
 
 ### Trees
 
 ```ruby
-// Plant one or many trees
-$digitalHumani->plantTree(enterprise_id: $ENTERPRISE_ID, project_id: '81818181', user: 'test@example.com', treeCount: 2);
+# Plant one or many trees
+digitalHumani.plant_tree(enterprise_id: $ENTERPRISE_ID, project_id: '81818181', user: 'test@example.com', treeCount: 2);
 
-// Get details of a single tree-planting request
-$digitalHumani->tree('9f05511e-56c6-40f7-b5ca-e25567991dc1');
+# Get details of a single tree-planting request
+digitalHumani.tree($TREE_UUID);
 ```
 
 ### Enterprises
 
 ```ruby
-// Get Enterprise by ID
-enterprise = digitalHumani->enterprise(enterprise_id: $ENTERPRISE_ID)
+# Get enterprise by ID
+digitalHumani.enterprise(enterprise_id: $ENTERPRISE_ID)
+
+# Get count of trees planted by date range
+digitalHumani.treeCount(enterprise_id: $ENTERPRISE_ID, start: '2021-01-01', end: '2022-01-01')
+
+# Get count of trees planted for month
+digitalHumani.treeCount(enterprise_id: $ENTERPRISE_ID, month: '2021-01')
+
+# Get count of trees planted by specific user. User string will match what's specified in `plant_tree` call
+digitalHumani.treeCount(enterprise_id: $ENTERPRISE_ID, user: 'test@example.com')
 ```
 
 ### Projects
 
 ```ruby
-// Get list of all Projects
-digitalHumani->projects()
+# Get list of all Projects
+digitalHumani.projects()
 
-// Get Project by ID
-digitalHumani->project(project_id: '81818181')
+# Get Project by ID
+digitalHumani.project(project_id: '81818181')
 ```
 
 ## Development

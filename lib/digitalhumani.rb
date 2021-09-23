@@ -11,36 +11,35 @@ module DigitalHumani
     # Allow enterprise_id to be read, written
     attr_accessor :enterprise_id
 
-    # Specify key, environment (w/ default "production"), enterpriseId (w/ "" default)
-    def initialize(api_key:, environment: "production", enterprise_id: nil)
-      # Validation
-        # api_key required
-        # environment must be "production" or "sandbox"
+    # Initilaize instance w/ API key, environment, and optionally enterpriseId
+    def initialize(&block)
+      instance_eval(&block)
 
-      @api_key = api_key
-      @environment = environment
-      @enterprise_id = enterprise_id if enterprise_id
-
-      # Define API base url based on specified environment
-      case environment
-      when "production"
-        @url = "https://api.digitalhumani.com/"
-      when "sandbox"
-        @url = "https://api.sandbox.digitalhumani.com"
+      # Validate api_key, environment inputs
+      if !@api_key or @api_key === ""
+        raise "Error: @api_key parameter required"
       end
-    end
+      if !@environment or !["production","sandbox"].include?(@environment)
+        raise "Error: @environment parameter required and must be one of 'production','sandbox'"
+      end
 
+      # Set API base url based on environment
+      case @environment
+        when "production"
+          @url = "https://api.digitalhumani.com/"
+        when "sandbox"
+          @url = "https://api.sandbox.digitalhumani.com"
+        end
+    end
 
     # Get enterprise by ID
     def enterprise(enterprise_id: @enterprise_id)
-      # Validation - enterprise_id required
+      if !enterprise_id
+        raise "Error: `enterprise_id` not set"
+      end 
+
       request(http_method: :get, endpoint: "/enterprise/#{enterprise_id}")
     end
-
-    # For an enterprise resource ...
-      # get tree count for enterprise
-        # w/ date range parameters
-        # w/ month date parameters
 
     # Get list of all projects
     def projects()
@@ -49,13 +48,22 @@ module DigitalHumani
 
     # Get project by ID
     def project(project_id:)
-      # Validation - project_id required
+      if !project_id
+        raise "Error: `project_id` parameter required"
+      end 
+
       request(endpoint: "/project/#{project_id}", http_method: :get)
     end
 
     # Plant tree
-    def plantTree(enterprise_id: @enterprise_id, project_id:, user:, treeCount: 1)
-      # Validation - enterprise_id, project_id required
+    def plant_tree(enterprise_id: @enterprise_id, project_id:, user:, treeCount: 1)
+      if !enterprise_id
+        raise "Error: `enterprise_id` not set"
+      end 
+      if !project_id
+        raise "Error: `project_id` parameter required"
+      end 
+
       request(endpoint: "/tree", http_method: :post, params: {
         enterpriseId: enterprise_id,
         projectId: project_id,
@@ -65,13 +73,42 @@ module DigitalHumani
     end
 
     # Get tree by UUID
-    def getTree(uuid:)
-      # Validation - uuid required
+    def get_tree(uuid:)
+      if !project_id
+        raise "Error: `uuid` parameter required"
+      end 
       request(endpoint: "/tree/#{uuid}", http_method: :get)
     end
 
-    # Get trees planted by user
-    # def countTreesPlantedByUser()
+    # Get tree count for enterprise - for date range, month, or user
+    def tree_count(enterprise_id: @enterprise_id, start_date: "", end_date: "", month: "", user: "")
+      if !enterprise_id
+        raise "Error: `enterprise_id` not set"
+      end 
+
+      if start_date and start_date != ""
+        if end_date and end_date != ""
+          # Request tree count over date range
+          request(http_method: :get, endpoint: "/enterprise/#{enterprise_id}/treeCount", params: {
+            startDate: start_date,
+            endDate: end_date
+          })
+        else
+          raise "Error: Both `start_date` and `end_date` parameters required"
+        end
+      elsif month and month != ""
+        # Request tree count for month
+        request(http_method: :get, endpoint: "/enterprise/#{enterprise_id}/treeCount/#{month}")
+      elsif user and user != ""
+        # Request tree count for user
+        request(http_method: :get, endpoint: "/tree", params: {
+          enterpriseId: enterprise_id,
+          user: user
+        })
+      else
+        raise "Error: invalid parameters. Must specify `start_date`/`end_date`, `month`, or `user`"
+      end
+    end
 
     private
     
@@ -86,7 +123,7 @@ module DigitalHumani
 
     # Send request via Faraday connection object, return JSON-parse response body
     def request(http_method:, endpoint:, params: {})
-      params = JSON.generate(params) if !params.empty?
+      params = JSON.generate(params) if !params.empty? and http_method != :get
       response = client.public_send(http_method, endpoint, params)
       JSON.parse(response.body)
     end
