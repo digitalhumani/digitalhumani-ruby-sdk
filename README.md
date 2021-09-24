@@ -31,7 +31,7 @@ Or install it yourself as:
 ### Configuration
 
 ```ruby
-# Initialize the DigitalHumani SDK instance:
+# Initialize the DigitalHumani SDK instance
 dh = DigitalHumani::SDK.new do
     @api_key = $API_KEY             # your API key
     @environment = "production"     # "production" or "sandbox"
@@ -51,10 +51,10 @@ Note that when `enterprise_id` has been specified on the instance, it will be us
 
 ```ruby
 # Plant one or many trees
-digitalHumani.plant_tree(enterprise_id: $ENTERPRISE_ID, project_id: '81818181', user: 'test@example.com', treeCount: 2);
+digitalHumani.plant_tree(enterprise_id: $ENTERPRISE_ID, project_id: '81818181', user: 'test@example.com', treeCount: 5)
 
 # Get details of a single tree-planting request
-digitalHumani.tree($TREE_UUID);
+digitalHumani.tree(uuid: $TREE_UUID)
 ```
 
 ### Enterprises
@@ -76,10 +76,10 @@ digitalHumani.treeCount(enterprise_id: $ENTERPRISE_ID, user: 'test@example.com')
 ### Projects
 
 ```ruby
-# Get list of all Projects
+# Get list of all projects
 digitalHumani.projects()
 
-# Get Project by ID
+# Get project by ID
 digitalHumani.project(project_id: '81818181')
 ```
 

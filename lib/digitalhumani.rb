@@ -73,8 +73,8 @@ module DigitalHumani
     end
 
     # Get tree by UUID
-    def get_tree(uuid:)
-      if !project_id
+    def tree(uuid:)
+      if !uuid
         raise "Error: `uuid` parameter required"
       end 
       request(endpoint: "/tree/#{uuid}", http_method: :get)
@@ -118,6 +118,7 @@ module DigitalHumani
         client.request :url_encoded
         client.headers["X-API-KEY"] = @api_key if @api_key
         client.headers["Content-Type"] = "application/json"
+        client.headers["User-Agent"] = "Digital Humani Ruby SDK"
       end
     end
 
