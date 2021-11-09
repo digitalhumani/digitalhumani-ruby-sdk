@@ -19,7 +19,7 @@ module DigitalHumani
       if !@api_key or @api_key === ""
         raise "Error: @api_key parameter required"
       end
-      if !@environment or !["production","sandbox"].include?(@environment)
+      if !@environment or !["production","sandbox","local"].include?(@environment)
         raise "Error: @environment parameter required and must be one of 'production','sandbox'"
       end
 
@@ -29,6 +29,8 @@ module DigitalHumani
           @url = "https://api.digitalhumani.com/"
         when "sandbox"
           @url = "https://api.sandbox.digitalhumani.com"
+        when "local"
+          @url = "http://localhost:3000"
         end
     end
 
@@ -126,7 +128,19 @@ module DigitalHumani
     def request(http_method:, endpoint:, params: {})
       params = JSON.generate(params) if !params.empty? and http_method != :get
       response = client.public_send(http_method, endpoint, params)
-      JSON.parse(response.body)
+      
+      if response.status === 200
+        return JSON.parse(response.body)
+      elsif response.status === 401 or response.status === 403
+        raise response.status.to_s + " " + response.body
+      else
+        if response.headers.include?("content-type") and response.headers["content-type"].start_with?("application/json")
+          json = JSON.parse(response.body)
+          raise response.status.to_s + " | " + json['message']
+        else 
+          raise response.status.to_s + " | " + response.body
+        end
+      end
     end
 
   end

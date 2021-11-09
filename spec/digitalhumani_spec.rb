@@ -67,4 +67,78 @@ RSpec.describe DigitalHumani do
     end
   end
 
+  describe "DigitalHumani API | Error handling" do
+    before(:each) do
+      @dh = DigitalHumani::SDK.new do
+        @api_key = "$API_KEY"
+        @environment = "sandbox"
+        @enterprise_id = "$ENTERPRISE_ID"
+      end
+    end
+
+    it "handles 400" do
+      # Stub network request with 400 error
+      stub_request(:any, /api.sandbox.digitalhumani.com/).
+        with(headers: {'Content-Type'=>'application/json', 'X-API-KEY'=>'$API_KEY'}).
+        to_return(status: 400, body: '{ "message": "Test Error" }', headers: {
+          "content-type": "application/json"
+        })
+
+      expect{
+        project = @dh.project(project_id: 'invalid')
+      }.to raise_error(RuntimeError, "400 | Test Error")
+    end
+
+    it "handles 401" do
+      # Stub network request with 400 error
+      stub_request(:any, /api.sandbox.digitalhumani.com/).
+        with(headers: {'Content-Type'=>'application/json', 'X-API-KEY'=>'$API_KEY'}).
+        to_return(status: 401, body: 'Unauthorized', headers: {
+          "content-type": "application/json"
+        })
+
+      expect{
+        project = @dh.project(project_id: 'invalid')
+      }.to raise_error(RuntimeError, "401 Unauthorized")
+    end
+
+    it "handles 403" do
+      # Stub network request with 400 error
+      stub_request(:any, /api.sandbox.digitalhumani.com/).
+        with(headers: {'Content-Type'=>'application/json', 'X-API-KEY'=>'$API_KEY'}).
+        to_return(status: 403, body: 'Forbidden', headers: {
+          "content-type": "application/json"
+        })
+
+      expect{
+        project = @dh.project(project_id: 'invalid')
+      }.to raise_error(RuntimeError, "403 Forbidden")
+    end
+    
+    it "handles 404" do
+      # Stub network request with 400 error
+      stub_request(:any, /api.sandbox.digitalhumani.com/).
+        with(headers: {'Content-Type'=>'application/json', 'X-API-KEY'=>'$API_KEY'}).
+        to_return(status: 404, body: '{ "message": "Test Error" }', headers: {
+          "content-type": "application/json"
+        })
+
+      expect{
+        project = @dh.project(project_id: 'invalid')
+      }.to raise_error(RuntimeError, "404 | Test Error")
+    end
+
+    it "handles 500" do
+      # Stub network request with 400 error
+      stub_request(:any, /api.sandbox.digitalhumani.com/).
+        with(headers: {'Content-Type'=>'application/json', 'X-API-KEY'=>'$API_KEY'}).
+        to_return(status: 500, body: '{ "message": "Test Error" }', headers: {
+          "content-type": "application/json"
+        })
+
+      expect{
+        project = @dh.project(project_id: 'invalid')
+      }.to raise_error(RuntimeError, "500 | Test Error")
+    end
+  end
 end
