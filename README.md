@@ -21,6 +21,7 @@ Or install it yourself as:
 ## Preparation
 
 - Create an account on [DigitalHumani,com](https://my.digitalhumani.com/register) and grab your API key from the **Developer** menu item.
+  - Note that you'll use a different API key per environment (production vs sandbox)
 - Review the [DigitalHumani documentation](https://docs.digitalhumani.com) to familiarize yourself with the environments, requests, projects, etc
 
 ## Usage
